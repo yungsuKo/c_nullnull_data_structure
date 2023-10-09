@@ -3,13 +3,16 @@
 #include <stdlib.h>
 // #include <malloc.h>
 
+// NODE 구조체 선언
 typedef struct NODE {
     char szData[64];
     struct NODE* next;
 } NODE;
 
+// dummy 할당
 NODE g_pHead = {0}; // 동적할당
 
+// NODE 구조체가 비어있는지 확인하는 isEmpty 함수
 int isEmpty(){
     if(g_pHead.next == NULL)
         return 1;
@@ -18,7 +21,7 @@ int isEmpty(){
 
 /*연결 리스트 전체 출력 함수*/
 void PrintList(void){
-    NODE* pHead = g_pHead.next;
+    NODE* pHead = &g_pHead;
     while(pHead != NULL){
         printf("[%p]%s , next[%p]\n", pHead, pHead->szData, pHead->next);
         pHead = pHead->next;
@@ -37,6 +40,7 @@ int InsertAtHead(char *pszData){
         pNode -> next = g_pHead.next;
         g_pHead.next = pNode;
     }
+    printf("g_pHead : %s \n",g_pHead.next->szData);
 
     return 1;
 }
@@ -98,10 +102,9 @@ int Delete(char* pszData){
     return 0;
 }
 
-void PushData(char *pszData){
-    InsertAtHead(pszData);
+void Enqueue(char *pszData){
+    InsertAtTail(pszData);
 }
-
 int PopData(NODE *pPopNode){
     NODE *sfp = g_pHead.next;
     if(isEmpty()){
@@ -113,44 +116,23 @@ int PopData(NODE *pPopNode){
     return 1;
 }
 
+int Dequeue(NODE *pGetData){
+    return PopData(pGetData);
+}
+
 int main() {
-    // 리스트 연결 테스트를 하기 위한 구조
-    // InsertAtHead("TEST 01");
-    // InsertAtHead("TEST 02");
-    // InsertAtHead("TEST 03");
-    // PrintList();
+    // Queue 테스트를 위한 코드
+    InsertAtHead("TEST01");
+    InsertAtHead("TEST02");
+    InsertAtHead("TEST03");
+    PrintList();
+    // Enqueue("TEST01");
+    // Enqueue("TEST02");
+    // Enqueue("TEST03");
 
-    // if(FindData("TEST 02")){
-    //     printf("ddd test found \n");
-    // };
-    // Delete("TEST 01");
-    // Delete("TEST 02");
-    // Delete("TEST 03");
-
-    // InsertAtTail("TEST 01");
-    // InsertAtTail("TEST 02");
-    // InsertAtTail("TEST 03");
-    // PrintList();
-
-    // if(FindData("TEST 02")){
-    //     printf("ddd test found \n");
-    // };
-    // // Delete("TEST 01");
-    // // Delete("TEST 02");
-    // // Delete("TEST 03");
-
-    // ReleaseList();
-    // InsertAtTail("TEST 04");
-    // ReleaseList();
-
-    // Stack 테스트를 위한 코드
-    PushData("TEST01");
-    PushData("TEST02");
-    PushData("TEST03");
-
-    NODE node = {0};
-    PopData(&node);
-    printf("Pop: %s \n", node.szData);
+    // NODE node = {0};
+    // Dequeue(&node);
+    // printf("Get: %s \n", node.szData);
 
     ReleaseList();
 

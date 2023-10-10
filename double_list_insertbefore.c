@@ -6,6 +6,7 @@
 // NODE 구조체 선언
 typedef struct NODE {
     char szData[64];
+    int idx;
     struct NODE* next;
     struct NODE* prev;
 } NODE;
@@ -25,7 +26,7 @@ void InitList(void){
 
     strcpy(g_pHead->szData, "Dummy Head");
     strcpy(g_pTail->szData, "Dummy Tail");
-
+    g_pHead->idx = 0;
     g_pHead->next = g_pTail;
     g_pTail->prev = g_pHead;
     puts("InitList() \n");
@@ -42,6 +43,7 @@ void ReleaseList(void){
 
     g_pHead = 0;
     g_pTail = 0;
+    g_pHead->idx = 0;
     g_nSize = 0;
     puts("ReleaseList() \n");
 }
@@ -60,30 +62,35 @@ void PrintList(void) {
 int InsertAtHead(const char *pszData){
     NODE* pNewNode = malloc(sizeof(NODE));
     memset(pNewNode, 0, sizeof(NODE));
-
     strcpy(pNewNode->szData, pszData);
 
     pNewNode->next = g_pHead->next;
     pNewNode->prev = g_pHead;
     g_pHead->next = pNewNode;
     pNewNode->next->prev = pNewNode;
-
+    
     g_nSize ++;
+    pNewNode -> idx = g_nSize;
+
     return g_nSize;
 }
 
-int InsertAtTail(const char *pszData){
-    NODE* pNewNode = malloc(sizeof(NODE));
+void InsertBefore(NODE* pDstNode, const char *pszData){
+    NODE *pPrev = pDstNode->prev;
+    NODE *pNewNode = malloc(sizeof(NODE));
     memset(pNewNode, 0, sizeof(NODE));
-
     strcpy(pNewNode->szData, pszData);
 
-    pNewNode->next = g_pTail;
-    pNewNode->prev = g_pTail->prev;
-    g_pTail->prev = pNewNode;
-    pNewNode->prev->next = pNewNode;
-
+    pNewNode->prev = pDstNode->prev;
+    pNewNode->next = pDstNode;
+    pDstNode->prev = pNewNode;
+    pPrev->next = pNewNode;
+    
     g_nSize ++;
+}
+
+int InsertAtTail(const char *pszData){
+    InsertBefore(g_pTail, pszData);
     return g_nSize;
 }
 
@@ -105,14 +112,35 @@ int DeleteNode(const char* pszData){
 
     printf("DeleteNode() : %p, %s \n", pNode, pNode->szData);
     free(pNode);
+
+    g_nSize--;
     return 0;
 }
 
-int InsertAt(int idx){
+int InsertAt(int idx, const char* pszData){
+    NODE *pTmp= g_pHead->next;
+    int i = 0;
+    while(pTmp!=g_pTail){
+        if(i == idx){
+            InsertBefore(pTmp, pszData);
+            return i;
+        }
+        pTmp=pTmp->next;
+        i++;
+    }
     return 0;
 }
 
 NODE *GetAt(int idx){
+    NODE *pTmp = g_pHead -> next;
+    int i = 0;
+    while(pTmp != g_pTail){
+        if(i == idx){
+            return pTmp;
+        }
+        pTmp=pTmp -> next;
+        i++;
+    }
     return NULL;
 }
 
@@ -126,8 +154,10 @@ int main() {
     
     PrintList();
 
-    printf("FindNode('TEST 01') : %p, %s \n", FindNode("TEST 01"), FindNode("TEST 01")->szData);
-    printf("FindNode('TEST 02') : %p, %s \n", FindNode("TEST 02"), FindNode("TEST 02")->szData);
+    printf("FindNode('TEST 01') : %p, %s, %d \n", FindNode("TEST 01"), FindNode("TEST 01")->szData, FindNode("TEST 01")->idx);
+    printf("FindNode('TEST 02') : %p, %s, %d \n", FindNode("TEST 02"), FindNode("TEST 02")->szData, FindNode("TEST 02")->idx);
+    printf("FindNode('TEST 03') : %p, %s, %d \n", FindNode("TEST 03"), FindNode("TEST 03")->szData, FindNode("TEST 03")->idx);
+
     DeleteNode("TEST 02");
     DeleteNode("TEST 03");
     DeleteNode("TEST 01");
@@ -137,7 +167,7 @@ int main() {
     InsertAtTail("TEST 01");
     InsertAtTail("TEST 02");
     InsertAtTail("TEST 03");
-
+    printf("GetAt(1)->szData : %s \n", GetAt(1)->szData);
     PrintList();
 
     ReleaseList();

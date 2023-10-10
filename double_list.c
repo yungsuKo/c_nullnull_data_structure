@@ -87,6 +87,27 @@ int InsertAtTail(const char *pszData){
     return g_nSize;
 }
 
+NODE* FindNode(const char* pszData){
+    NODE *pTmp = g_pHead->next; // head를 빼고 데이터 중에 검색
+    while(pTmp != g_pTail){
+        if (strcmp(pTmp->szData, pszData) == 0){
+            return pTmp;
+        }
+        pTmp = pTmp->next;
+    }
+    return NULL;
+}
+
+int DeleteNode(const char* pszData){
+    NODE *pNode=FindNode(pszData);
+    pNode->prev->next = pNode->next;
+    pNode->next->prev = pNode->prev;
+
+    printf("DeleteNode() : %p, %s \n", pNode, pNode->szData);
+    free(pNode);
+    return 0;
+}
+
 int main() {
     InitList();
     PrintList();
@@ -95,6 +116,20 @@ int main() {
     InsertAtTail("TEST 02");
     InsertAtTail("TEST 03");
     
+    PrintList();
+
+    printf("FindNode('TEST 01') : %p, %s \n", FindNode("TEST 01"), FindNode("TEST 01")->szData);
+    printf("FindNode('TEST 02') : %p, %s \n", FindNode("TEST 02"), FindNode("TEST 02")->szData);
+    DeleteNode("TEST 02");
+    DeleteNode("TEST 03");
+    DeleteNode("TEST 01");
+
+    PrintList();
+
+    InsertAtTail("TEST 01");
+    InsertAtTail("TEST 02");
+    InsertAtTail("TEST 03");
+
     PrintList();
 
     ReleaseList();

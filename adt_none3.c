@@ -1,3 +1,7 @@
+// 재사용 가능한 연결 리스트
+
+// 전역 변수때문에 재사용하기가 매우어려움
+// 재사용성을 높이기 위해 분할 컴파일
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>

@@ -25,7 +25,14 @@ void InsertNode(char *pszData){
 }
 
 void ReleaseList(){
-
+    NODE *pTmp = g_pHead;
+    printf("ReleaseList() \n");
+    while(pTmp == NULL){
+        NODE *pDelete = pTmp;
+        free(pDelete);
+        pTmp = pTmp -> next;
+    }
+    g_pHead = NULL;
 }
 
 void PrintList() {
@@ -37,21 +44,46 @@ void PrintList() {
     }
 };
 
-void FindNode(char *pszData){
-
+int FindNode(char *pszData){
+    NODE *pTmp = g_pHead;
+    while(pTmp != NULL){
+        if(strcmp(pTmp->szData, pszData) == 0){
+            printf("Find %s : [%p] \n", pTmp->szData, pTmp);
+            return 1;
+        }
+        pTmp = pTmp->next;
+    }
+    return 0;
 }
 
-void Delete(){
-
+void Delete(char *pszData){
+    NODE *pTmp = g_pHead;
+    NODE *pPrev = NULL;
+    while(pTmp != NULL){
+        if(strcmp(pTmp->szData, pszData)==0){
+            if(pPrev == NULL){
+                g_pHead = pTmp->next;
+            }else{
+                pPrev->next = pTmp->next;
+            }
+            printf("Delete [%p] %s \n", pTmp, pTmp->szData);
+            free(pTmp);
+        }
+        pPrev = pTmp;
+        pTmp = pTmp->next;
+    }
 }
-
 
 
 int main(void) {
-    // InsertNode("TEST 01");
-    // InsertNode("TEST 02");
-    // InsertNode("TEST 03");
+    InsertNode("TEST 01");
+    InsertNode("TEST 02");
+    InsertNode("TEST 03");
 
     PrintList();
+    Delete("TEST 01");
+    
+    PrintList();
+    ReleaseList();
     return 0;
 };

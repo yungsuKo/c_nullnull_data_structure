@@ -78,16 +78,33 @@ int Delete(char *pszData){
     return 1;
 }
 
+void Enqueue(char *pszData){
+    InsertAtTail(pszData);
+}
 
+int PopData(NODE *pPopNode){
+    NODE *sfp = g_pHead.next;
+    if(isEmpty()){
+        return 0;
+    }
+    memcpy(pPopNode, sfp, sizeof(NODE));
+    g_pHead.next = sfp->next;
+    free(sfp);
+    return 1;
+}
+
+int Dequeue(NODE *pGetData){
+    return PopData(pGetData);
+}
 
 int main(void)
 {
-    InsertAtTail("TEST 01");
-    InsertAtTail("TEST 02");
+    Enqueue("TEST 01");
+    Enqueue("TEST 02");
     PrintList();
-    ReleaseList();
-    InsertAtHead("TEST 01");
-    InsertAtHead("TEST 02");
-    PrintList();
+
+    NODE example = {0};
+    Dequeue(&example);
+    printf("[%p] %s \n", &example, example.szData);
     return 0;
 }

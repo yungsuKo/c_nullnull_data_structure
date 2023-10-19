@@ -19,7 +19,7 @@ int isEmpty(){
 
 void PrintList(void){
     NODE *pTmp = g_Head.next;
-    printf("PrintList()\n \n");
+    printf("\nPrintList()\n");
     while(pTmp != NULL){
         printf("[%p] %s \n", pTmp, pTmp->szData);
         pTmp = pTmp->next;
@@ -68,35 +68,50 @@ void ReleaseList(void){
 
 NODE *FindData(char *pszData){
     NODE *pTmp = g_Head.next;
+    NODE *pPrev = &g_Head;
     while(pTmp != NULL){
         if(strcmp(pTmp->szData, pszData)== 0){
-            printf("Find Data Found : %s\n", pTmp->szData);
-            return pTmp;
+            printf("\nFind Data Found : %s\n", pTmp->szData);
+            return pPrev;
         }
         pTmp = pTmp -> next;
+        pPrev = pPrev -> next;
     }
     return 0;
 }
 
 int Delete(char *pszData){
+    NODE *pPrev = FindData(pszData);
+    NODE *pDelete = pPrev->next;
+    if(pPrev != NULL){
+        // 맨 앞에 있는 값일 경우 pPrev가 NULL일 수 있음.
+        pPrev->next = pDelete->next;
+        if(pDelete == g_pTail){
+            // 맨뒤에 있는 값일 경우
+            g_pTail = pPrev;
+        }
+        printf("\nDelete(): [%p] [%s] \n", pDelete, pDelete->szData);
+        free(pDelete);
+        
+        return 1;
+    }
     
+    return 0;
 }
 
 
 
 int main(void)
 {
-    PrintList();
     InsertAtTail("TEST 01");
     InsertAtTail("TEST 02");
-    PrintList();
-    ReleaseList();
-    // PrintList();
-    // InsertAtHead("TEST 01");
-    // InsertAtHead("TEST 02");
-    // FindData("TEST 01");
-    NODE *pFindData = FindData("TEST 01");
-    printf("pFindData : %s \n", pFindData->szData);
+    InsertAtTail("TEST 03");
     
+    PrintList();
+    Delete("TEST 03");
+    InsertAtTail("TEST 03");
+    PrintList();
+
+    ReleaseList();
     return 0;
 }

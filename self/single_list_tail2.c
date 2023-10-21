@@ -92,14 +92,30 @@ int Delete(char *pszData){
         }
         printf("\nDelete(): [%p] [%s] \n", pDelete, pDelete->szData);
         free(pDelete);
-        
         return 1;
     }
     
     return 0;
 }
 
+void Enqueue(char *pszData) {
+    InsertAtTail(pszData);
+}
 
+int PopData(NODE *pPopData){
+    NODE *sfp = g_Head.next;
+    if(isEmpty()){
+        return 0;
+    }
+    memcpy(pPopData, sfp, sizeof(NODE));
+    g_Head.next = sfp->next;
+    free(sfp);
+    return 1;
+}
+
+void Dequeue(NODE *pData){
+    PopData(pData);
+}
 
 int main(void)
 {
@@ -108,9 +124,10 @@ int main(void)
     InsertAtTail("TEST 03");
     
     PrintList();
-    Delete("TEST 03");
-    InsertAtTail("TEST 03");
-    PrintList();
+
+    NODE popData = {0};
+    Dequeue(&popData);
+    printf("popData : [%p] %s \n", &popData, popData.szData);
 
     ReleaseList();
     return 0;

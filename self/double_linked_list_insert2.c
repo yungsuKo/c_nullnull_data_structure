@@ -48,17 +48,22 @@ int InsertAtHead(char *pszData){
     return g_nSize;
 }
 
-int InsertAtTail(char *pszData){
+void InsertBefore(NODE *pDstNode, char *pszData){
+    NODE *prev = pDstNode -> prev;
     NODE *newNode = (NODE*)malloc(sizeof(NODE));
     memset(newNode, 0, sizeof(NODE));
     strcpy(newNode->szData, pszData);
 
-    newNode->prev = g_pTail->prev;
-    newNode->next = g_pTail;
-    g_pTail->prev->next=newNode;
-    g_pTail->prev=newNode;
+    newNode -> prev = prev;
+    newNode -> next = pDstNode;
+    prev -> next = newNode;
+    pDstNode->prev = newNode;
 
     g_nSize ++;
+}
+
+int InsertAtTail(char *pszData){
+    InsertBefore(g_pTail, pszData);
     return g_nSize;
 }
 
@@ -113,26 +118,48 @@ int DeleteNode(char *pszData){
     return 0;
 }
 
-void InsertBefore(){
-
+int InsertAt(int idx, char *pszData){
+    int i = 0;
+    NODE *pTmp = g_pHead->next;
+    while(pTmp != NULL){
+        if(i == idx){
+            InsertBefore(pTmp, pszData);
+            return i;
+        }
+        pTmp = pTmp -> next;
+        i++;
+    }
+    return 0;
 }
 
-void InsertAt(){}
+NODE *GetAt(int idx){
+    NODE *pTmp = g_pHead->next;
+    int i = 0;
 
-void GetAt(){
-
+    while(pTmp != NULL){
+        if(i == idx){
+            return pTmp;
+        }
+        pTmp = pTmp -> next;
+        i ++;
+    }
+    return NULL;
 }
 
 int main(){
     InitList();
-    InsertAtHead("TEST 01");
-    InsertAtHead("TEST 02");
-    InsertAtHead("TEST 03");
+    InsertAtTail("TEST 01");
+    InsertAtTail("TEST 02");
+    InsertAtTail("TEST 03");
     NODE *FindOnde = FindNode("TEST 02");
     printf("FindOnde : [%p] %s \n", FindOnde, FindOnde->szData);
     PrintList();
     DeleteNode("TEST 02");
+    InsertAt(1, "RENEW TEST 02");
     PrintList();
+
+    printf("GetAt() [%p] %s \n", GetAt(1), GetAt(1)->szData);
+
     ReleaseList();
     return 0;
 }

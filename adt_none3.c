@@ -10,7 +10,6 @@
 typedef struct USERDATA {
     // 멤버 함수 포인터
     const char * (*GetKey)(void *);
-
     char szName[64];
     char szPhone[64];
 } USERDATA;

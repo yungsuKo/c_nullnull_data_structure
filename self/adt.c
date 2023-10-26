@@ -41,7 +41,22 @@ void InitList(){
 void ReleaseList(){}
 
 void PrintList(){
-
+    int i = 0;
+    NODE *pTmp = g_pHead;
+    while(pTmp != 0){
+        if(pTmp == g_pHead || pTmp == g_pTail){
+            printf("DUMMY \n");
+        }else{
+            USERDATA* pUser = pTmp->pData;
+            printf("[[%d]] [%p] %s [%p] \n", 
+                i, 
+                pTmp->prev, 
+                pUser->GetKey(pUser), 
+                pTmp->next);
+        }
+        pTmp = pTmp -> next;
+        ++i;
+    }
 }
 
 int InsertAtHead(void *pParam){
@@ -90,10 +105,40 @@ NODE *FindNode(char *pszKey){
     return NULL;
 }
 
-int DeleteNode(){}
+int DeleteNode(char *pszKey){
+    NODE *pDelete = FindNode(pszKey);
+    if(pDelete != NULL){
+        pDelete -> prev -> next = pDelete -> next;
+        pDelete -> next -> prev = pDelete -> prev;
+        free(pDelete -> pData);
+        free(pDelete);
+        g_nSize --;
+        return 1;
+    }
+    return 0;
+}
 
 int InsertAt(){}
 
 NODE *GetAt(){}
-USERDATA *CreateUserData(){}
+USERDATA *CreateUserData(const char *pszName, const char *pszPhone){
+    USERDATA *pNewData = (USERDATA*)malloc(sizeof(USERDATA));
+    memset(pNewData, 0, sizeof(USERDATA));
+
+    strcpy(pNewData->szName, pszName);
+    strcpy(pNewData->szPhone, pszPhone);
+
+    pNewData -> GetKey = GetKeyFromUserData;
+    return pNewData;
+}
+
+int main(){
+    InitList();
+    USERDATA *pNewData = CreateUserData("TEST 01", "010-0000-0000");
+    InsertAtTail(pNewData);
+
+    PrintList();
+
+    return 0;
+}
 

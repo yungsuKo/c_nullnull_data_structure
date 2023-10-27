@@ -107,18 +107,29 @@ NODE *FindNode(char *pszKey){
 
 int DeleteNode(char *pszKey){
     NODE *pDelete = FindNode(pszKey);
-    if(pDelete != NULL){
-        pDelete -> prev -> next = pDelete -> next;
-        pDelete -> next -> prev = pDelete -> prev;
-        free(pDelete -> pData);
-        free(pDelete);
-        g_nSize --;
-        return 1;
-    }
+
+    pDelete -> prev -> next = pDelete -> next;
+    pDelete -> next -> prev = pDelete -> prev;
+    free(pDelete -> pData);
+    free(pDelete);
+    g_nSize --;
+
     return 0;
 }
 
-int InsertAt(){}
+int InsertAt(int idx, void *pParam){
+    NODE *pTmp = g_pHead->next;
+    int i = 0;
+    while(pTmp != NULL){
+        if(i == idx){
+            InsertBefore(pTmp, pParam);
+            return 1;
+        }
+        pTmp = pTmp -> next;
+        i++;
+    }
+    return 0;
+}
 
 NODE *GetAt(){}
 USERDATA *CreateUserData(const char *pszName, const char *pszPhone){
@@ -134,8 +145,11 @@ USERDATA *CreateUserData(const char *pszName, const char *pszPhone){
 
 int main(){
     InitList();
-    USERDATA *pNewData = CreateUserData("TEST 01", "010-0000-0000");
+    USERDATA *pNewData = NULL;
+    pNewData = CreateUserData("TEST 01", "010-0000-0000");
     InsertAtTail(pNewData);
+    pNewData = CreateUserData("TEST 02", "010-0000-0002");
+    InsertAt(1, pNewData);
 
     PrintList();
 

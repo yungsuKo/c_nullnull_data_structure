@@ -6,8 +6,6 @@
 
 typedef struct USERDATA{
     // 멤버 함수 포인터
-    const char *(*GetKey)(void *);
-
     char szName[64];
     char szPhone[64];
 } USERDATA;
@@ -19,7 +17,8 @@ const char* GetKeyFromUserData(USERDATA *pUser){
 typedef struct NODE{
     // 관리 대상 자료
     void *pData;
-
+    // 멤버 함수 포인터
+    const char *(*GetKey)(void *);
     // 자료구조
     struct NODE *prev;
     struct NODE *next;
@@ -55,7 +54,7 @@ void PrintList(){
             printf("[[%d]] [%p] %s [%p] \n", 
                 i, 
                 pTmp->prev, 
-                pUser->GetKey(pUser), 
+                pUser->szName, 
                 pTmp->next);
         }
         pTmp = pTmp -> next;
@@ -65,10 +64,11 @@ void PrintList(){
 
 // pParam : 호출자가 메모리를 동적 할당해서 전달해야함.
 // 그렇지 않으면 의존성이 생김 -> 값 설정까지 진행해서 전달
-int InsertAtHead(void *pParam){
+int InsertAtHead(void *pParam, const char *(*pfParam)(void *)){
     NODE *pNewNode = (NODE*)malloc(sizeof(NODE));
     memset(pNewNode, 0, sizeof(NODE));
     pNewNode -> pData = pParam;
+    pNewNode -> GetKey = pfParam;
     
     pNewNode -> next = g_pHead->next;
     pNewNode -> prev = g_pHead;
@@ -79,11 +79,12 @@ int InsertAtHead(void *pParam){
     return g_nSize;
 }
 
-void InsertBefore(NODE *pDstNode, void *pParam){
+void InsertBefore(NODE *pDstNode, void *pParam, const char *(*pfParam)(void *)){
     NODE *pPrev = pDstNode -> prev;
     NODE *pNewNode = (NODE*)malloc(sizeof(NODE));
     memset(pNewNode, 0, sizeof(NODE));
     pNewNode->pData = pParam;
+    pNewNode -> GetKey = pfParam;
 
     pNewNode -> next = pDstNode;
     pNewNode -> prev = pPrev;
@@ -94,7 +95,7 @@ void InsertBefore(NODE *pDstNode, void *pParam){
 }
 
 int InsertAtTail(USERDATA *pParam){
-    InsertBefore(g_pTail, pParam);
+    InsertBefore(g_pTail, pParam, GetKeyFromUserData);
     return g_nSize;
 }
 
@@ -102,8 +103,9 @@ NODE *FindNode(char *pszKey){
     char *(*pfGetKey)(void*) = NULL; // 이 부분은 아직 모르겠음
     NODE *pTmp = g_pHead->next;
     while(pTmp != g_pTail){
-        pfGetKey = pTmp->pData;
+        pfGetKey = pTmp->GetKey;
         if(strcmp(pfGetKey(pTmp->pData), pszKey)==0){
+            printf("[%s] \n", pfGetKey(pTmp->pData));
             return pTmp;
         }
         pTmp = pTmp->next;
@@ -128,7 +130,7 @@ int InsertAt(int idx, void *pParam){
     int i = 0;
     while(pTmp != NULL){
         if(i == idx){
-            InsertBefore(pTmp, pParam);
+            InsertBefore(pTmp, pParam, GetKeyFromUserData);
             return 1;
         }
         pTmp = pTmp -> next;
@@ -157,7 +159,7 @@ USERDATA *CreateUserData(const char *pszName, const char *pszPhone){
     strcpy(pNewData->szName, pszName);
     strcpy(pNewData->szPhone, pszPhone);
 
-    pNewData -> GetKey = GetKeyFromUserData;
+    // pNewData -> GetKey = GetKeyFromUserData;
     return pNewData;
 }
 
@@ -168,8 +170,10 @@ int main(){
     InsertAtTail(pNewData);
     pNewData = CreateUserData("TEST 02", "010-0000-0002");
     InsertAt(1, pNewData);
-
+    FindNode("TEST 01");
     PrintList();
+
+    ReleaseList();
 
     return 0;
 }

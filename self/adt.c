@@ -1,5 +1,6 @@
 // 재사용이 가능한 연결리스트
-
+// getkey 함수를 node 구조체에 넣는 것이 타당한 것이냐?
+// 자료구조쪽에서 놔두어도 되지만 USERDATA에서 다루는 것이 로직이 간단할 수 있음.
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -42,7 +43,21 @@ void InitList(){
     puts("InitList() \n");
 }
 
-void ReleaseList(){}
+void ReleaseList(){
+    NODE* pTmp = g_pHead;
+    while(pTmp != 0){
+        NODE* pDelete = pTmp;
+        pTmp = pTmp -> next;
+        free(pDelete->pData);
+        free(pDelete);
+    }
+
+    g_pHead = NULL;
+    g_pTail = NULL;
+    g_nSize = 0;
+    puts("ReleaseList() \n");
+}
+
 
 void PrintList(){
     int i = 0;
@@ -156,7 +171,7 @@ USERDATA *CreateUserData(const char *pszName, const char *pszPhone){
 
     strcpy(pNewData->szName, pszName);
     strcpy(pNewData->szPhone, pszPhone);
-
+    // 구조체 멤버 함수 포인터 초기화
     pNewData -> GetKey = GetKeyFromUserData;
     return pNewData;
 }

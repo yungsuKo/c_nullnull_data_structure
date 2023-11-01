@@ -47,6 +47,7 @@ void InsertBefore(LIST_INFO *pListData, NODE* pDstNode, void *pParam) {
     NODE *pPrev = pDstNode -> prev;
     NODE *pNewNode = (NODE*)malloc(sizeof(NODE));
     memset(pNewNode, 0, sizeof(NODE));
+    pNewNode->pData = pParam;
 
     pNewNode -> next = pDstNode;
     pNewNode -> prev = pPrev;
@@ -56,14 +57,12 @@ void InsertBefore(LIST_INFO *pListData, NODE* pDstNode, void *pParam) {
     pListData->nSize ++;
 }
 
-void InsertAtTail(LIST_INFO *pListData, void *pParam) {
+int InsertAtTail(LIST_INFO *pListData, void *pParam) {
     InsertBefore(pListData, pListData->pTail,pParam);
     return pListData->nSize;
 }
 
-NODE *FindNode(LIST_INFO *pListData, char *pszKey) {
-    
-}
+NODE *FindNode(LIST_INFO *pListData, char *pszKey) {}
 
 int Delete(LIST_INFO *pListData, char *pszKey) {}
 

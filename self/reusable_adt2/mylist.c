@@ -85,6 +85,29 @@ int Delete(LIST_INFO *pListData, char *pszKey) {
     return 0;
 }
 
-int InsertAt(LIST_INFO *pListData, int idx, void *pParam) {}
+int InsertAt(LIST_INFO *pListData, int idx, void *pParam) {
+    NODE *pTmp = pListData->pHead->next;
+    int i = 0;
+    while(pTmp->next != pListData->pTail){
+        if(idx == i){
+            InsertBefore(pListData, pTmp, pParam);
+            return 1;
+        }
+        i++;
+        pTmp = pTmp->next;
+    }
+    return 0;
+}
 
-NODE *GetAt(LIST_INFO *pListData, int idx) {}
+NODE *GetAt(LIST_INFO *pListData, int idx) {
+    NODE *pTmp = pListData->pHead->next;
+    int i = 0;
+    while(pTmp->next != pListData->pTail){
+        if(i == idx){
+            return pTmp;
+        }
+        i++;
+        pTmp = pTmp->next;
+    }
+    return NULL;
+}

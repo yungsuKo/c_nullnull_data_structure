@@ -62,9 +62,28 @@ int InsertAtTail(LIST_INFO *pListData, void *pParam) {
     return pListData->nSize;
 }
 
-NODE *FindNode(LIST_INFO *pListData, char *pszKey) {}
+NODE *FindNode(LIST_INFO *pListData, char *pszKey) {
+    char (*pfGetKey)(void *) = NULL;
+    NODE *pTmp = pListData -> pHead;
+    while(pTmp != pListData->pTail){
+        pfGetKey = pTmp -> pData;
+        if(strcmp(pfGetKey(pTmp->pData), pszKey) == 0){
+            return pTmp;
+        }
+        pTmp = pTmp -> next;
+    }
+    return NULL;
+}
 
-int Delete(LIST_INFO *pListData, char *pszKey) {}
+int Delete(LIST_INFO *pListData, char *pszKey) {
+    NODE *pDelete = FindNode(pListData, pszKey);
+    pDelete->prev->next = pDelete->next;
+    pDelete->next->prev = pDelete->prev;
+    free(pDelete->pData);
+    free(pDelete);
+    pListData -> nSize --;
+    return 0;
+}
 
 int InsertAt(LIST_INFO *pListData, int idx, void *pParam) {}
 
